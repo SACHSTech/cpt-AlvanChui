@@ -15,7 +15,7 @@ import javafx.stage.Stage;
  */
 public class VBoxApp extends Application {
  
-    public Parent createContent() {
+    public Parent createVBoxContent() {
         CheckBox cb1 = new CheckBox("Breakfast");
         CheckBox cb2 = new CheckBox("Lunch");
         CheckBox cb3 = new CheckBox("Dinner");
@@ -34,7 +34,7 @@ public class VBoxApp extends Application {
  
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setScene(new Scene(createContent()));
+        primaryStage.setScene(new Scene(createVBoxContent()));
         primaryStage.show();
     }
  

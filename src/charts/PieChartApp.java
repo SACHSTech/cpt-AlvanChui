@@ -9,8 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.stage.Stage;
- 
- 
+
 /**
  * A circular chart divided into segments. The value of each segment represents
  * a proportion of the total.
@@ -28,14 +27,14 @@ public class PieChartApp extends Application {
                 new PieChart.Data("Apple", 30));
     }
  
-    public Parent createContent() {
+    public Parent createPieChart() {
         chart = new PieChart(generateData());
         chart.setClockwise(false);
         return chart;
     }
  
     @Override public void start(Stage primaryStage) throws Exception {
-        primaryStage.setScene(new Scene(createContent()));
+        primaryStage.setScene(new Scene(createPieChart()));
         primaryStage.show();
     }
  

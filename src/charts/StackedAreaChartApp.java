@@ -22,7 +22,7 @@ public class StackedAreaChartApp extends Application {
     private NumberAxis xAxis;
     private NumberAxis yAxis;
  
-    public Parent createContent() {
+    public Parent createAreaChart() {
         xAxis = new NumberAxis("X Values", 1.0d, 9.0d, 2.0d);
         yAxis = new NumberAxis("Y Values", 0.0d, 30.0d, 2.0d);
  
@@ -58,7 +58,7 @@ public class StackedAreaChartApp extends Application {
     }
  
     @Override public void start(Stage primaryStage) throws Exception {
-        primaryStage.setScene(new Scene(createContent()));
+        primaryStage.setScene(new Scene(createAreaChart()));
         primaryStage.show();
     }
  

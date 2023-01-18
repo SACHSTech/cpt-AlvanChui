@@ -1,7 +1,5 @@
 package cpt;
 
-import java.io.*;
-
 public class cancer {
     private String country;
     private String code;
