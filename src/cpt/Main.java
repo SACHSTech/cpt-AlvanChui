@@ -30,7 +30,7 @@ public class Main extends Application{
     
     public static void readDataLineByLine(String file) throws Exception
     {
-        ArrayList<cancer> groups = new ArrayList<>();
+        List<cancer> groups = new ArrayList<>();
         List<List<Integer>> records = new ArrayList<>();
         List<String> countries = new ArrayList<>();
         List<String> codes = new ArrayList<>();
@@ -44,7 +44,9 @@ public class Main extends Application{
                 String[] values = line.split(",");
                 countries.add(values[0]);
                 codes.add(values[1]);
-                year.add(Integer.parseInt(values[2],0,values[2].length(), 10));
+                if(binarySearch(year.stream().mapToInt( (i) -> i.intValue()).toArray(), Integer.parseInt(values[2],0,values[2].length()-1, 10)) == -1){
+                    year.add(Integer.parseInt(values[2],0,values[2].length(), 10));
+                }
                 for(int count = 3; count < values.length; count++) {
                     values[count-3] = values[count];
                 }
@@ -55,50 +57,56 @@ public class Main extends Application{
             }
             int[] dataArr = new int[records.size()];
             for(int count = 0; count < records.size(); count++) {
-                dataArr = records.get(count).stream().mapToInt( (i) -> i.intValue()).toArray();
+                dataArr = records.get(count).stream().mapToInt((i) -> i.intValue()).toArray();
                 cancer newdata = new cancer(countries.get(count), codes.get(count), (int)year.get(count),dataArr);
                 groups.add(newdata);
             }
+            for(int count = 0; count < year.size(); count++){
+                System.out.println(year.get(count));
+            }
         }
     }
-    private LineChart chart;
+    private LineChart LineChart;
     private NumberAxis xAxis;
     private NumberAxis yAxis;
  
     public Parent createLineChart() {
         xAxis = new NumberAxis("Years", 1990, 2020, 1);
         yAxis = new NumberAxis("Death by cancer", 0, 1000000, 1000);
-        ObservableList<XYChart.Series<Double,Double>> lineChartData =
+        ObservableList<XYChart.Series<Integer,Integer>> lineChartData =
             FXCollections.observableArrayList(
                 new LineChart.Series<>("Series 1",
-                FXCollections.observableArrayList
-                (
-                    new XYChart.Data<>(0.0, 1.0),
-                    new XYChart.Data<>(1.2, 1.4),
-                    new XYChart.Data<>(2.2, 1.9),
-                    new XYChart.Data<>(2.7, 2.3),
-                    new XYChart.Data<>(2.9, 0.5)
+                FXCollections.observableArrayList(
+                    
                 )),
-                new LineChart.Series<>("Series 2", FXCollections.observableArrayList
-                (
-                    new XYChart.Data<>(0.0, 1.6),
-                    new XYChart.Data<>(0.8, 0.4),
-                    new XYChart.Data<>(1.4, 2.9),
-                    new XYChart.Data<>(2.1, 1.3),
-                    new XYChart.Data<>(2.6, 0.9)
+                new LineChart.Series<>("Series 2",
+                FXCollections.observableArrayList(
                 ))
             );
-        chart = new LineChart(xAxis, yAxis, lineChartData);
-        return chart;
+        LineChart = new LineChart(xAxis, yAxis, lineChartData);
+        return LineChart;
     }
  
     @Override public void start(Stage primaryStage) throws Exception {
         primaryStage.setScene(new Scene(createLineChart()));
         primaryStage.show();
+    } 
+    
+    public static int binarySearch(int arr[], int key){  
+        int low = 0;
+        int high = arr.length - 1;
+        while(low <= high){  
+            int mid = (low + high)/2;
+            if(arr[mid] == key){  
+                return 0;
+            }
+            else if(arr[mid] < key){  
+                low = mid + 1;     
+            }
+            else if(arr[mid] > key){  
+                high = mid - 1;  
+            }
+        }
+        return -1;
     }
- 
-    /**
-     * Java main for when running without JavaFX launcher
-     */
- 
 }
