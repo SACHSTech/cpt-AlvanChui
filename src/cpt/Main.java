@@ -4,7 +4,9 @@ import java.io.*;
 import java.util.stream.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
@@ -44,14 +46,12 @@ public class Main extends Application{
                 String[] values = line.split(",");
                 countries.add(values[0]);
                 codes.add(values[1]);
-                if(binarySearch(year.stream().mapToInt( (i) -> i.intValue()).toArray(), Integer.parseInt(values[2],0,values[2].length()-1, 10)) == -1){
-                    year.add(Integer.parseInt(values[2],0,values[2].length(), 10));
-                }
+                year.add(Integer.parseInt(values[2],10));
                 for(int count = 3; count < values.length; count++) {
                     values[count-3] = values[count];
                 }
                 for(int count = 0; count < values.length; count++) {
-                    data.add(Integer.parseInt(values[count], 0, values[count].length(), 10));
+                    data.add(Integer.parseInt(values[count], 10));
                 }
                 records.add(data);
             }
@@ -61,9 +61,19 @@ public class Main extends Application{
                 cancer newdata = new cancer(countries.get(count), codes.get(count), (int)year.get(count),dataArr);
                 groups.add(newdata);
             }
-            for(int count = 0; count < year.size(); count++){
-                System.out.println(year.get(count));
-            }
+            Set<String> setCountries = new HashSet<>(countries);
+            countries.clear();
+            countries.addAll(setCountries);
+            Set<String> setCodes = new HashSet<>(codes);
+            codes.clear();
+            codes.addAll(setCodes);
+            Set<Integer> setYear = new HashSet<>(year);
+            year.clear();
+            year.addAll(setYear);
+            System.out.println(countries);
+            System.out.println(codes);
+            System.out.println((year));
+
         }
     }
     private LineChart LineChart;
@@ -72,7 +82,7 @@ public class Main extends Application{
  
     public Parent createLineChart() {
         xAxis = new NumberAxis("Years", 1990, 2020, 1);
-        yAxis = new NumberAxis("Death by cancer", 0, 1000000, 1000);
+        yAxis = new NumberAxis("Death by cancer", 0, 1000000, 10000);
         ObservableList<XYChart.Series<Integer,Integer>> lineChartData =
             FXCollections.observableArrayList(
                 new LineChart.Series<>("Series 1",
@@ -92,18 +102,19 @@ public class Main extends Application{
         primaryStage.show();
     } 
     
-    public static int binarySearch(int arr[], int key){  
+    public static int binarySearch_String(List<String> list, String key){  
         int low = 0;
-        int high = arr.length - 1;
+        int high = list.size() - 1;
         while(low <= high){  
             int mid = (low + high)/2;
-            if(arr[mid] == key){  
-                return 0;
+            int cur = key.compareTo(list.get(mid));
+            if(cur == 0){   
+                return mid;
             }
-            else if(arr[mid] < key){  
+            else if(cur > 0){  
                 low = mid + 1;     
             }
-            else if(arr[mid] > key){  
+            else if(cur < 0){  
                 high = mid - 1;  
             }
         }
