@@ -4,14 +4,12 @@ public class cancer {
     private String country;
     private String code;
     private int year;
-    private boolean display;
     private int[] cancerData;
     
-    public cancer(String countrysString, String codeString, int intYear,boolean displayBool, int[] intArrCancerData){
+    public cancer(String countrysString, String codeString, int intYear, int[] intArrCancerData){
         country = countrysString;
         code = codeString;
         year= intYear;
-        display = displayBool;
         cancerData = intArrCancerData;
     }
     public String getCountry() {
@@ -22,9 +20,6 @@ public class cancer {
     }
     public int getYear() {
         return year;
-    }
-    public boolean getDisplay() {
-        return display;
     }
     public int[] getCancerData() {
         return cancerData;
@@ -38,7 +33,7 @@ public class cancer {
     }
     @Override
     public String toString() {
-        String returnString = country + ", " + code + ", " + year + ", " + display + ", ";
+        String returnString = country + ", " + code + ", " + year + ", ";
         for(int count = 0 ; count < cancerData.length; count++){
             returnString += cancerData[count];
             if(count < cancerData.length - 1){

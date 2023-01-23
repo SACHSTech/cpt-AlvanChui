@@ -1,5 +1,5 @@
 /* ....Show License.... */
-package charts;
+package cpt.charts;
  
  
 import javafx.application.Application;
@@ -26,7 +26,7 @@ public class LineChartApp extends Application {
     public Parent createLineChart() {
         xAxis = new NumberAxis("Values for X-Axis", 0, 3, 1);
         yAxis = new NumberAxis("Values for Y-Axis", 0, 3, 1);
-        ObservableList<XYChart.Series<Double,Double>> lineChartData =
+        ObservableList<XYChart.Series<Number,Number>> lineChartData =
             FXCollections.observableArrayList(
                 new LineChart.Series<>("Series 1",
                                        FXCollections.observableArrayList(
@@ -36,7 +36,7 @@ public class LineChartApp extends Application {
                     new XYChart.Data<>(2.7, 2.3),
                     new XYChart.Data<>(2.9, 0.5))),
                 new LineChart.Series<>("Series 2",
-                                       FXCollections.observableArrayList(
+                                    FXCollections.observableArrayList(
                     new XYChart.Data<>(0.0, 1.6),
                     new XYChart.Data<>(0.8, 0.4),
                     new XYChart.Data<>(1.4, 2.9),

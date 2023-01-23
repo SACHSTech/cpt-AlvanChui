@@ -12,18 +12,38 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.StackedAreaChart;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.IndexRange;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
+import javafx.scene.control.TabPane.TabClosingPolicy;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Line;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.converter.StringConverter;
+import javafx.event.ActionEvent;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -37,11 +57,13 @@ public class Main extends Application{
     public static List<String> codes = new ArrayList<>();
     public static List<Integer> years = new ArrayList<>();
     public static List<cancer> cancerList = new ArrayList<>();
+    public static List<countries_data> countriesList = new ArrayList<>();
+    public static String[] legends;
     public static void main(String[] args) throws Exception{
         try (BufferedReader br = new BufferedReader(new FileReader("src/csv/cancer-deaths-by-type-grouped.csv"))) {
             String line;
             line = br.readLine();
-            String[] legends = line.split(",");
+            legends = line.split(",");
             while ((line = br.readLine()) != null) {
                 List<Integer> data = new ArrayList<>();
                 String[] values = line.split(",");
@@ -59,7 +81,7 @@ public class Main extends Application{
             int[] dataArr = new int[records.size()];
             for(int count = 0; count < records.size(); count++) {
                 dataArr = records.get(count).stream().mapToInt((i) -> i.intValue()).toArray();
-                cancer newdata = new cancer(countries.get(count), codes.get(count), (int)years.get(count),false, dataArr);
+                cancer newdata = new cancer(countries.get(count), codes.get(count), (int)years.get(count), dataArr);
                 cancerList.add(newdata);
             }
             Set<String> setCountries = new HashSet<>(countries);
@@ -71,47 +93,100 @@ public class Main extends Application{
             Set<Integer> setYear = new HashSet<>(years);
             years.clear();
             years.addAll(setYear);
-            System.out.println(countries);
-            System.out.println(codes);
-            System.out.println((years));
-            launch(args);        
+            
+            for(int i = 0; i < countries.size(); i++) {
+                countries_data newCountry = new countries_data(true, countries.get(i));
+                countriesList.add(newCountry);
+            }
+            launch(args);
         }
     }
-    @Override 
-    public void start(Stage primaryStage){
-        var group = new Group();
-        group.setManaged(false);
-        var pane = new StackPane(createLineChart_TotalDeath(countries, codes, years), group);
-        primaryStage.setScene(new Scene(pane, 600 ,400));
-        primaryStage.show();
-    } 
+
+    private TabPane tabPane;
+    private Tab tab1;
+    private Tab tab2;
     private LineChart LineChart;
     private NumberAxis xAxis;
     private NumberAxis yAxis;
- 
-    public Parent createLineChart_TotalDeath(List<String> country,List<String> code,List<Integer> year) {
-        xAxis = new NumberAxis("Years", 1990, 2020, 1);
-        yAxis = new NumberAxis("Death by cancer", 0, 1000000, 50000);
-        int n = 1;
-        ObservableList<XYChart.Series<Number,Number>> lineChartData =
-            FXCollections.observableArrayList(
-                new LineChart.Series<>(cancerList.get(n).getCode(),
-                FXCollections.observableArrayList()),
-                new LineChart.Series<>("Series 2",
-                FXCollections.observableArrayList(
-                
-                )
-                )
-            ); 
-            new XYChart.Data<>(cancerList.get(n).getYear(),cancerList.get(n).getTotalDeath())
-        LineChart = new LineChart(xAxis, yAxis, lineChartData);
-        return LineChart;
+    public static List<CheckBox> countryCBList = new ArrayList<CheckBox>();
+    public static List<Series> seriesList = new ArrayList<Series>();
+    
+    public Parent createContent() {
+        //initializing tabpane
+        tabPane = new TabPane();
+        tabPane.setPrefSize(400, 360);
+        tabPane.setMinSize(TabPane.USE_PREF_SIZE, TabPane.USE_PREF_SIZE);
+        tabPane.setMaxSize(TabPane.USE_PREF_SIZE, TabPane.USE_PREF_SIZE);
+        tab1 = new Tab();
+        tab2 = new Tab();
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        tabPane.setSide(Side.TOP);
+        
+        //Check Boxes
+        for(int i = 0; i < countries.size(); i++){
+            countryCBList.add(new CheckBox(countries.get(i)));
+            countryCBList.get(i).setSelected(true);
+        }
+        
+        VBox vboxMeals = new VBox(3);
+        vboxMeals.getChildren().addAll(countryCBList);
+        vboxMeals.setAlignment(Pos.CENTER_LEFT);
+        
+        
+        // Line Chart
+        xAxis = new NumberAxis(legends[2], 1990, 2020, 1);
+        yAxis = new NumberAxis("Death from cancer", 0, 1000000, 50000);
+        LineChart = new LineChart<Number,Number>(xAxis,yAxis);
+        LineChart.setTitle("total death from cancer over the past decades");
+        XYChart.Series series = new XYChart.Series();
+        for(int cbCount = 0; cbCount < countryCBList.size(); cbCount++) {
+            if(countryCBList.get(cbCount).isSelected()){
+                for(int i = 0; i < cancerList.size(); i++) {
+                    if(cancerList.get(i).getCountry() == countries.get(cbCount)) { 
+                        series.getData().add(new XYChart.Data(cancerList.get(i).getYear(), cancerList.get(i).getTotalDeath()));
+                    }
+                    else{
+                        seriesList.add(series);
+                        System.out.println(series);
+                        series = new XYChart.Series();
+                        System.out.println(series);
+                    }
+                }
+            }
+        }
+        //tab 1
+        tab1.setText("Database");
+        tab1.setContent(vboxMeals);
+        tabPane.getTabs().add(tab1);
+        
+        //tab 2
+        tab2.setText("Line Chart");
+        tab2.setContent(LineChart);
+        tabPane.getTabs().add(tab2);
+
+        return tabPane;
     }
     
-
  
-    
-    
+    // public Parent createLineChart_TotalDeath() {
+        
+    //     return LineChart;
+    // }
+
+    // public static List<CheckBox> checkBoxList = new ArrayList<CheckBox>();
+    // public Parent createVBoxContent() {
+        
+    //     for(int i = 0; i < countries.size(); i++){
+    //         checkBoxList.add(new CheckBox(countries.get(i)));
+    //     }
+    //     VBox vboxMeals = new VBox(1);
+    //     vboxMeals.getChildren().addAll(checkBoxList);
+    //     System.out.println(checkBoxList.size()+2);
+    //     vboxMeals.setAlignment(Pos.CENTER_LEFT);
+ 
+    //     return vboxMeals;
+    // }
+
     public static int binarySearch_String(List<String> list, String key){  
         int low = 0;
         int high = list.size() - 1;
@@ -130,4 +205,11 @@ public class Main extends Application{
         }
         return -1;
     }
+    public void start(Stage primaryStage){
+        var group = new Group();
+        group.setManaged(false);
+        var pane = new StackPane(createContent(), group);
+        primaryStage.setScene(new Scene(pane, 600 ,400));
+        primaryStage.show();
+    } 
 }
