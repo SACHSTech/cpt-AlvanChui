@@ -1,9 +1,7 @@
 package cpt;
 
 import java.io.*;
-import java.util.stream.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,37 +10,16 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import javafx.scene.chart.StackedAreaChart;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.IndexRange;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
-import javafx.scene.control.TabPane.TabClosingPolicy;
-import javafx.scene.control.cell.CheckBoxListCell;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.Line;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.css.converter.StringConverter;
-import javafx.event.ActionEvent;
-import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -51,7 +28,8 @@ import javafx.stage.Stage;
  
 
 
-public class Main extends Application{
+public class Main extends Application
+{
     public static List<List<Integer>> records = new ArrayList<>();
     public static List<String> countries = new ArrayList<>();
     public static List<String> codes = new ArrayList<>();
@@ -59,27 +37,33 @@ public class Main extends Application{
     public static List<cancer> cancerList = new ArrayList<>();
     public static List<countries_data> countriesList = new ArrayList<>();
     public static String[] legends;
-    public static void main(String[] args) throws Exception{
-        try (BufferedReader br = new BufferedReader(new FileReader("src/csv/cancer-deaths-by-type-grouped.csv"))) {
+    public static void main(String[] args) throws Exception
+    {
+        try (BufferedReader br = new BufferedReader(new FileReader("src/csv/cancer-deaths-by-type-grouped-trimmed.csv"))) 
+        {
             String line;
             line = br.readLine();
             legends = line.split(",");
-            while ((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) 
+            {
                 List<Integer> data = new ArrayList<>();
                 String[] values = line.split(",");
                 countries.add(values[0]);
                 codes.add(values[1]);
                 years.add(Integer.parseInt(values[2],10));
-                for(int count = 3; count < values.length; count++) {
+                for(int count = 3; count < values.length; count++) 
+                {
                     values[count-3] = values[count];
                 }
-                for(int count = 0; count < values.length; count++) {
+                for(int count = 0; count < values.length; count++) 
+                {
                     data.add(Integer.parseInt(values[count], 10));
                 }
                 records.add(data);
             }
             int[] dataArr = new int[records.size()];
-            for(int count = 0; count < records.size(); count++) {
+            for(int count = 0; count < records.size(); count++) 
+            {
                 dataArr = records.get(count).stream().mapToInt((i) -> i.intValue()).toArray();
                 cancer newdata = new cancer(countries.get(count), codes.get(count), (int)years.get(count), dataArr);
                 cancerList.add(newdata);
@@ -94,10 +78,6 @@ public class Main extends Application{
             years.clear();
             years.addAll(setYear);
             
-            for(int i = 0; i < countries.size(); i++) {
-                countries_data newCountry = new countries_data(true, countries.get(i));
-                countriesList.add(newCountry);
-            }
             launch(args);
         }
     }
@@ -109,7 +89,8 @@ public class Main extends Application{
     //public static List<CheckBox> countryCBList = new ArrayList<CheckBox>();
     
     
-    public Parent createContent() {
+    public Parent createContent() 
+    {
         //initializing tabpane
         tabPane = new TabPane();
         tabPane.setPrefSize(400, 360);
@@ -122,47 +103,60 @@ public class Main extends Application{
         tabPane.setSide(Side.TOP);
         
         //table
-        ObservableList<countries_data> data = FXCollections.observableArrayList();
-
-        TableColumn Col1 = new TableColumn();
-        Col1.setText("Country");
-        Col1.setCellValueFactory(new PropertyValueFactory("firstName"));
-        TableColumn Col2 = new TableColumn();
-        Col2.setText("Last");
-        Col2.setCellValueFactory(new PropertyValueFactory("lastName"));
+        ObservableList<cancer> data = FXCollections.observableList(cancerList);
+        TableColumn ColCountry = new TableColumn();
+        ColCountry.setText("Country");
+        ColCountry.setCellValueFactory(new PropertyValueFactory("country"));
+        TableColumn ColCode = new TableColumn();
+        ColCode.setText("code");
+        ColCode.setCellValueFactory(new PropertyValueFactory("code"));
+        TableColumn ColYear = new TableColumn();
+        ColYear.setText("year");
+        ColYear.setCellValueFactory(new PropertyValueFactory("year"));
+        TableColumn ColCancerData = new TableColumn();
+        ColCancerData.setText("Cancer Data");
+        ColCancerData.setCellValueFactory(new PropertyValueFactory("cancerData"));
         final TableView tableView = new TableView();
         tableView.setItems(data);
-        tableView.getColumns().addAll(Col1, Col2);
+        tableView.getColumns().addAll(ColCountry, ColCode, ColYear, ColCancerData);
 
         // Line Chart
-        final List<Series> seriesList = new ArrayList<Series>(countries.size());
+        final List<Series> seriesList = new ArrayList<Series>();
         final NumberAxis xAxis = new NumberAxis(legends[2], 1990, 2020, 1);
-        final NumberAxis yAxis = new NumberAxis("Death from cancer", 0, 1000000, 50000);
+        final NumberAxis yAxis = new NumberAxis();
         final LineChart<Number, Number> LineChart = new LineChart<Number,Number>(xAxis,yAxis);
         LineChart.setTitle("total death from cancer over the past decades");
         mergeSort(countries, 0, countries.size()-1);
-        
-        for(int i = 0; i < cancerList.size();i++) {
-            // int result = binarySearch_String(countries, cancerList.get(i).getCountry()); 
-            // System.out.println(result);  
-            // if(result != -1){
-            //     seriesList.get(result).getData().add(new XYChart.Data(cancerList.get(i).getYear(), cancerList.get(i).getTotalDeath()));
-            // }
+
+        for(int i = 0; i < countries.size();i++)
+        {
+            seriesList.add(new XYChart.Series());
+            seriesList.get(i).setName(countries.get(i));
+        }
+        for(int i = 0; i < cancerList.size();i++)
+        {
             int resultIndex = codes.indexOf(cancerList.get(i).getCode());
             seriesList.get(resultIndex).getData().add(new XYChart.Data(cancerList.get(i).getYear(), cancerList.get(i).getTotalDeath()));
         }
-            LineChart.getData().addAll(seriesList.get(1));
-        
+        for(int n = 0; n < countries.size();n++)
+        {
+            LineChart.getData().addAll(seriesList.get(n));
+        }
         //Pie Chart
-        ObservableList<PieChart.Data> pieList = FXCollections.observableArrayList();
+        // int LegendIndex;
+        // int dataIndex;
+        // for(int i = 0; i < legends.length; i++){
+        //     List<String> rowData;
+        //     String name = rowData.get(LegendIndex);
+        //     double value = Double.parseDouble(rowData.get(dataIndex));
+        //     PieChart.Data pieChartData = new PieChart.Data(name, value);}
         
-            PieChart pieChart = new PieChart();
-            pieChart.setClockwise(false);
+        // pieChart.setClockwise(false);
         
         //tab 1
-        //  tab1.setText("Database");
-        //  tab1.setContent();
-        //  tabPane.getTabs().add(tab1);
+         tab1.setText("Database");
+         tab1.setContent(tableView);
+         tabPane.getTabs().add(tab1);
         
         //tab 2
         tab2.setText("Line Chart");
@@ -170,14 +164,15 @@ public class Main extends Application{
         tabPane.getTabs().add(tab2);
             
         //tab 3
-        tab3.setText("Pie Chart");
-        tab3.setContent(pieChart);
-        tabPane.getTabs().add(tab3);
+        // tab3.setText("Pie Chart");
+        // tab3.setContent(pieChart);
+        // tabPane.getTabs().add(tab3);
 
         return tabPane;
     }
 
-    public static int binarySearch_String(List<String> list, String key){  
+    public static int binarySearch_String(List<String> list, String key)
+    {  
         int low = 0;
         int high = list.size() - 1;
         while(low <= high){  

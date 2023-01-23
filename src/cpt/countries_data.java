@@ -1,23 +1,20 @@
 package cpt;
 
 public class countries_data {
-    private boolean displayed;
+    private int TotalD;
     private String country;
 
-    public countries_data(boolean displayedBool, String countryString) {
-        displayed = displayedBool;
+    public countries_data(int intTotalD, String countryString) {
+        TotalD = intTotalD;
         country = countryString;
     }
-    public boolean isDisplayed() {
-        return displayed;
+    public int isDisplayed() {
+        return TotalD;
     }
     public String getCountry() {
         return country;
     }
     public void setCountry(String country) {
         this.country = country;
-    }
-    public void setDisplayed(boolean displayed) {
-        this.displayed = displayed;
     }
 }
