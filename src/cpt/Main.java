@@ -105,11 +105,9 @@ public class Main extends Application{
     private TabPane tabPane;
     private Tab tab1;
     private Tab tab2;
-    private LineChart LineChart;
-    private NumberAxis xAxis;
-    private NumberAxis yAxis;
-    public static List<CheckBox> countryCBList = new ArrayList<CheckBox>();
-    public static List<Series> seriesList = new ArrayList<Series>();
+    private Tab tab3;
+    //public static List<CheckBox> countryCBList = new ArrayList<CheckBox>();
+    
     
     public Parent createContent() {
         //initializing tabpane
@@ -119,73 +117,55 @@ public class Main extends Application{
         tabPane.setMaxSize(TabPane.USE_PREF_SIZE, TabPane.USE_PREF_SIZE);
         tab1 = new Tab();
         tab2 = new Tab();
+        tab3 = new Tab();
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         tabPane.setSide(Side.TOP);
         
-        //Check Boxes
-        for(int i = 0; i < countries.size(); i++){
-            countryCBList.add(new CheckBox(countries.get(i)));
-            countryCBList.get(i).setSelected(true);
-        }
-        
-        VBox vboxMeals = new VBox(3);
-        vboxMeals.getChildren().addAll(countryCBList);
-        vboxMeals.setAlignment(Pos.CENTER_LEFT);
-        
-        
+        //table
+        //TableView<List<String>> table = new TableView<>();
+        //ObservableList<List<String>> tableData = loadTableDataFromDatabase();
+
         // Line Chart
-        xAxis = new NumberAxis(legends[2], 1990, 2020, 1);
-        yAxis = new NumberAxis("Death from cancer", 0, 1000000, 50000);
-        LineChart = new LineChart<Number,Number>(xAxis,yAxis);
+        final List<Series> seriesList = new ArrayList<Series>(countries.size());
+        final NumberAxis xAxis = new NumberAxis(legends[2], 1990, 2020, 1);
+        final NumberAxis yAxis = new NumberAxis("Death from cancer", 0, 1000000, 50000);
+        final LineChart<Number, Number> LineChart = new LineChart<Number,Number>(xAxis,yAxis);
         LineChart.setTitle("total death from cancer over the past decades");
-        XYChart.Series series = new XYChart.Series();
-        for(int cbCount = 0; cbCount < countryCBList.size(); cbCount++) {
-            if(countryCBList.get(cbCount).isSelected()){
-                for(int i = 0; i < cancerList.size(); i++) {
-                    if(cancerList.get(i).getCountry() == countries.get(cbCount)) { 
-                        series.getData().add(new XYChart.Data(cancerList.get(i).getYear(), cancerList.get(i).getTotalDeath()));
-                    }
-                    else{
-                        seriesList.add(series);
-                        System.out.println(series);
-                        series = new XYChart.Series();
-                        System.out.println(series);
-                    }
-                }
-            }
-        }
+        //mergeSort(codes, 0, codes.size()-1);
+        
+        //for(int i = 0; i < cancerList.size();i++) {
+            //int result = binarySearch_String(codes, cancerList.get(i).getCode()); 
+            // System.out.println(result);  
+            //if(result != -1){
+                //seriesList.get(result).getData().add(new XYChart.Data(cancerList.get(i).getYear(), cancerList.get(i).getTotalDeath()));
+            //}
+        //}
+            //LineChart.getData().addAll(seriesList.get(1));
+        
+        //Pie Chart
+        ObservableList<PieChart.Data> pieList = FXCollections.observableArrayList();
+        
+            PieChart pieChart = new PieChart();
+            pieChart.setClockwise(false);
+        
         //tab 1
-        tab1.setText("Database");
-        tab1.setContent(vboxMeals);
-        tabPane.getTabs().add(tab1);
+        // tab1.setText("Database");
+        // tab1.setContent();
+        // tabPane.getTabs().add(tab1);
         
         //tab 2
         tab2.setText("Line Chart");
         tab2.setContent(LineChart);
         tabPane.getTabs().add(tab2);
+            
+        //tab 3
+        tab3.setText("Pie Chart");
+        tab3.setContent(pieChart);
+        tabPane.getTabs().add(tab3);
 
         return tabPane;
+        }
     }
-    
- 
-    // public Parent createLineChart_TotalDeath() {
-        
-    //     return LineChart;
-    // }
-
-    // public static List<CheckBox> checkBoxList = new ArrayList<CheckBox>();
-    // public Parent createVBoxContent() {
-        
-    //     for(int i = 0; i < countries.size(); i++){
-    //         checkBoxList.add(new CheckBox(countries.get(i)));
-    //     }
-    //     VBox vboxMeals = new VBox(1);
-    //     vboxMeals.getChildren().addAll(checkBoxList);
-    //     System.out.println(checkBoxList.size()+2);
-    //     vboxMeals.setAlignment(Pos.CENTER_LEFT);
- 
-    //     return vboxMeals;
-    // }
 
     public static int binarySearch_String(List<String> list, String key){  
         int low = 0;
@@ -205,6 +185,60 @@ public class Main extends Application{
         }
         return -1;
     }
+
+    public static void mergeSort(List<String> a, int from, int to) {
+        if (from == to) {
+            return;
+        }
+        int mid = (from + to) / 2;
+        // sort the first and the second half
+        mergeSort(a, from, mid);
+        mergeSort(a, mid + 1, to);
+        merge(a, from, mid, to);
+    }// end mergeSort
+//work
+
+    public static void merge(List<String> a, int from, int mid, int to) {
+        int n = to - from + 1;       // size of the range to be merged
+        List<String> b = new ArrayList<>();   // merge both halves into a temporary array b
+        int i1 = from;               // next element to consider in the first range
+        int i2 = mid + 1;            // next element to consider in the second range
+        int j = 0;                   // next open position in b
+
+        // as long as neither i1 nor i2 past the end, move the smaller into b
+        while (i1 <= mid && i2 <= to) {
+            if (a.get(i1).compareTo(a.get(i2)) < 0) {
+                b.add(j, a.get(i1));
+                i1++;
+            } else {
+                b.add(j, a.get(i2));
+                i2++;
+            }
+            j++;
+        }
+
+        // note that only one of the two while loops below is executed
+        // copy any remaining entries of the first half
+        while (i1 <= mid) {
+            b.add(j, a.get(i1));
+            i1++;
+            j++;
+        }
+
+        // copy any remaining entries of the second half
+        while (i2 <= to) {
+            b.add(j, a.get(i2));
+            i2++;
+            j++;
+        }
+
+        // copy back from the temporary array
+        for (j = 0; j < n; j++) {
+            a.add(from + j, b.get(j));
+        }
+    }//end merge
+
+    @Override
     public void start(Stage primaryStage){
         var group = new Group();
         group.setManaged(false);
@@ -213,3 +247,4 @@ public class Main extends Application{
         primaryStage.show();
     } 
 }
+
