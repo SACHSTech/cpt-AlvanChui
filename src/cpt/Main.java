@@ -14,9 +14,17 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.control.IndexRange;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.StackPane;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.css.converter.StringConverter;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -24,20 +32,13 @@ import javafx.stage.Stage;
 
 
 public class Main extends Application{
+    public static List<List<Integer>> records = new ArrayList<>();
+    public static List<String> countries = new ArrayList<>();
+    public static List<String> codes = new ArrayList<>();
+    public static List<Integer> years = new ArrayList<>();
+    public static List<cancer> cancerList = new ArrayList<>();
     public static void main(String[] args) throws Exception{
-        readDataLineByLine("src/csv/cancer-deaths-by-type-grouped.csv");
-        launch(args);
-        
-    }
-    
-    public static void readDataLineByLine(String file) throws Exception
-    {
-        List<cancer> groups = new ArrayList<>();
-        List<List<Integer>> records = new ArrayList<>();
-        List<String> countries = new ArrayList<>();
-        List<String> codes = new ArrayList<>();
-        List<Integer> year = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("src/csv/cancer-deaths-by-type-grouped.csv"))) {
             String line;
             line = br.readLine();
             String[] legends = line.split(",");
@@ -46,7 +47,7 @@ public class Main extends Application{
                 String[] values = line.split(",");
                 countries.add(values[0]);
                 codes.add(values[1]);
-                year.add(Integer.parseInt(values[2],10));
+                years.add(Integer.parseInt(values[2],10));
                 for(int count = 3; count < values.length; count++) {
                     values[count-3] = values[count];
                 }
@@ -58,8 +59,8 @@ public class Main extends Application{
             int[] dataArr = new int[records.size()];
             for(int count = 0; count < records.size(); count++) {
                 dataArr = records.get(count).stream().mapToInt((i) -> i.intValue()).toArray();
-                cancer newdata = new cancer(countries.get(count), codes.get(count), (int)year.get(count),dataArr);
-                groups.add(newdata);
+                cancer newdata = new cancer(countries.get(count), codes.get(count), (int)years.get(count),false, dataArr);
+                cancerList.add(newdata);
             }
             Set<String> setCountries = new HashSet<>(countries);
             countries.clear();
@@ -67,40 +68,49 @@ public class Main extends Application{
             Set<String> setCodes = new HashSet<>(codes);
             codes.clear();
             codes.addAll(setCodes);
-            Set<Integer> setYear = new HashSet<>(year);
-            year.clear();
-            year.addAll(setYear);
+            Set<Integer> setYear = new HashSet<>(years);
+            years.clear();
+            years.addAll(setYear);
             System.out.println(countries);
             System.out.println(codes);
-            System.out.println((year));
-
+            System.out.println((years));
+            launch(args);        
         }
     }
+    @Override 
+    public void start(Stage primaryStage){
+        var group = new Group();
+        group.setManaged(false);
+        var pane = new StackPane(createLineChart_TotalDeath(countries, codes, years), group);
+        primaryStage.setScene(new Scene(pane, 600 ,400));
+        primaryStage.show();
+    } 
     private LineChart LineChart;
     private NumberAxis xAxis;
     private NumberAxis yAxis;
  
-    public Parent createLineChart() {
+    public Parent createLineChart_TotalDeath(List<String> country,List<String> code,List<Integer> year) {
         xAxis = new NumberAxis("Years", 1990, 2020, 1);
-        yAxis = new NumberAxis("Death by cancer", 0, 1000000, 10000);
-        ObservableList<XYChart.Series<Integer,Integer>> lineChartData =
+        yAxis = new NumberAxis("Death by cancer", 0, 1000000, 50000);
+        int n = 1;
+        ObservableList<XYChart.Series<Number,Number>> lineChartData =
             FXCollections.observableArrayList(
-                new LineChart.Series<>("Series 1",
-                FXCollections.observableArrayList(
-                    
-                )),
+                new LineChart.Series<>(cancerList.get(n).getCode(),
+                FXCollections.observableArrayList()),
                 new LineChart.Series<>("Series 2",
                 FXCollections.observableArrayList(
-                ))
-            );
+                
+                )
+                )
+            ); 
+            new XYChart.Data<>(cancerList.get(n).getYear(),cancerList.get(n).getTotalDeath())
         LineChart = new LineChart(xAxis, yAxis, lineChartData);
         return LineChart;
     }
+    
+
  
-    @Override public void start(Stage primaryStage) throws Exception {
-        primaryStage.setScene(new Scene(createLineChart()));
-        primaryStage.show();
-    } 
+    
     
     public static int binarySearch_String(List<String> list, String key){  
         int low = 0;
