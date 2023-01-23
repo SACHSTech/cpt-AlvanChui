@@ -95,7 +95,6 @@ public class Main extends Application
         tabPane = new TabPane();
         tabPane.setPrefSize(400, 360);
         tabPane.setMinSize(TabPane.USE_PREF_SIZE, TabPane.USE_PREF_SIZE);
-        tabPane.setMaxSize(TabPane.USE_PREF_SIZE, TabPane.USE_PREF_SIZE);
         tab1 = new Tab();
         tab2 = new Tab();
         tab3 = new Tab();
@@ -130,8 +129,9 @@ public class Main extends Application
 
         for(int i = 0; i < countries.size();i++)
         {
-            seriesList.add(new XYChart.Series());
-            seriesList.get(i).setName(countries.get(i));
+            Series newSeries = new XYChart.Series();
+            newSeries.setName(countries.get(i));
+            seriesList.add(newSeries);
         }
         for(int i = 0; i < cancerList.size();i++)
         {
@@ -150,7 +150,7 @@ public class Main extends Application
         //     String name = rowData.get(LegendIndex);
         //     double value = Double.parseDouble(rowData.get(dataIndex));
         //     PieChart.Data pieChartData = new PieChart.Data(name, value);}
-        
+            
         // pieChart.setClockwise(false);
         
         //tab 1
@@ -248,7 +248,8 @@ public class Main extends Application
         var group = new Group();
         group.setManaged(false);
         var pane = new StackPane(createContent(), group);
-        primaryStage.setScene(new Scene(pane, 600 ,400));
+        primaryStage.setScene(new Scene(pane, 1200 ,720));
+        primaryStage.resizableProperty();
         primaryStage.show();
     } 
 }
