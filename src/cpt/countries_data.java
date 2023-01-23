@@ -3,7 +3,6 @@ package cpt;
 public class countries_data {
     private boolean displayed;
     private String country;
-    private String code;
 
     public countries_data(boolean displayedBool, String countryString) {
         displayed = displayedBool;
@@ -11,9 +10,6 @@ public class countries_data {
     }
     public boolean isDisplayed() {
         return displayed;
-    }
-    public String getCode() {
-        return code;
     }
     public String getCountry() {
         return country;

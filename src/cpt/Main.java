@@ -122,8 +122,17 @@ public class Main extends Application{
         tabPane.setSide(Side.TOP);
         
         //table
-        //TableView<List<String>> table = new TableView<>();
-        //ObservableList<List<String>> tableData = loadTableDataFromDatabase();
+        ObservableList<countries_data> data = FXCollections.observableArrayList();
+
+        TableColumn Col1 = new TableColumn();
+        Col1.setText("Country");
+        Col1.setCellValueFactory(new PropertyValueFactory("firstName"));
+        TableColumn Col2 = new TableColumn();
+        Col2.setText("Last");
+        Col2.setCellValueFactory(new PropertyValueFactory("lastName"));
+        final TableView tableView = new TableView();
+        tableView.setItems(data);
+        tableView.getColumns().addAll(Col1, Col2);
 
         // Line Chart
         final List<Series> seriesList = new ArrayList<Series>(countries.size());
@@ -131,16 +140,18 @@ public class Main extends Application{
         final NumberAxis yAxis = new NumberAxis("Death from cancer", 0, 1000000, 50000);
         final LineChart<Number, Number> LineChart = new LineChart<Number,Number>(xAxis,yAxis);
         LineChart.setTitle("total death from cancer over the past decades");
-        //mergeSort(codes, 0, codes.size()-1);
+        mergeSort(countries, 0, countries.size()-1);
         
-        //for(int i = 0; i < cancerList.size();i++) {
-            //int result = binarySearch_String(codes, cancerList.get(i).getCode()); 
+        for(int i = 0; i < cancerList.size();i++) {
+            // int result = binarySearch_String(countries, cancerList.get(i).getCountry()); 
             // System.out.println(result);  
-            //if(result != -1){
-                //seriesList.get(result).getData().add(new XYChart.Data(cancerList.get(i).getYear(), cancerList.get(i).getTotalDeath()));
-            //}
-        //}
-            //LineChart.getData().addAll(seriesList.get(1));
+            // if(result != -1){
+            //     seriesList.get(result).getData().add(new XYChart.Data(cancerList.get(i).getYear(), cancerList.get(i).getTotalDeath()));
+            // }
+            int resultIndex = codes.indexOf(cancerList.get(i).getCode());
+            seriesList.get(resultIndex).getData().add(new XYChart.Data(cancerList.get(i).getYear(), cancerList.get(i).getTotalDeath()));
+        }
+            LineChart.getData().addAll(seriesList.get(1));
         
         //Pie Chart
         ObservableList<PieChart.Data> pieList = FXCollections.observableArrayList();
@@ -149,9 +160,9 @@ public class Main extends Application{
             pieChart.setClockwise(false);
         
         //tab 1
-        // tab1.setText("Database");
-        // tab1.setContent();
-        // tabPane.getTabs().add(tab1);
+        //  tab1.setText("Database");
+        //  tab1.setContent();
+        //  tabPane.getTabs().add(tab1);
         
         //tab 2
         tab2.setText("Line Chart");
@@ -164,7 +175,6 @@ public class Main extends Application{
         tabPane.getTabs().add(tab3);
 
         return tabPane;
-        }
     }
 
     public static int binarySearch_String(List<String> list, String key){  
