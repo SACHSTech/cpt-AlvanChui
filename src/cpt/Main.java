@@ -78,6 +78,20 @@ public class Main extends Application
                 }
                 records.add(data);
             }
+        }
+        try (BufferedReader br_ww = new BufferedReader(new FileReader("src/csv/worldwide-cancer-deaths-by-type-grouped.csv"))) 
+        {
+            int[] worldwideData;
+            String nextline;
+            while ((nextline = br_ww.readLine()) != null) 
+            {
+                String[] values = nextline.split(",");
+                for (int i = 3; i < values.length; i++)
+                {
+                    worldwideData
+                }
+            }
+        }
             for(int count = 0; count < records.size(); count++) 
             {
                 cancer newdata = new cancer(countries.get(count), codes.get(count), (int)years.get(count), records.get(count));
@@ -94,7 +108,7 @@ public class Main extends Application
             years.addAll(setYear);
             
             launch(args);
-        }
+        
     }
 
     private TabPane tabPane;
@@ -140,7 +154,7 @@ public class Main extends Application
         final NumberAxis yAxis = new NumberAxis();
         final LineChart<Number, Number> LineChart = new LineChart<Number,Number>(xAxis,yAxis);
         LineChart.setTitle("total death from cancer over the past decades");
-
+        
         for(int i = 0; i < countries.size();i++)
         {
             Series newSeries = new XYChart.Series();
@@ -157,44 +171,28 @@ public class Main extends Application
         {
             LineChart.getData().addAll(seriesList.get(n));
         }
-
+        
         //Pie Chart
-        int LegendIndex;
-        int dataIndex;
-            List<String> rowData;
-            String name = rowData.get(LegendIndex);
-            double value = Double.parseDouble(rowData.get(dataIndex));
-            ObservableList<Data> pieChartData = FXCollections.ObservableList<>();
+        int[] SumByType = new int[cancerList.size()-3];
+        for(int i = 0; i < cancerList.size();i++){
+            for(int dataIndex = 3; dataIndex <cancerList.get(i).getCancerData().size(); dataIndex++)
+            {
+                SumByType[dataIndex-3] += cancerList.get(i).getCancerData_Index(dataIndex);
+            }
+        }
+        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+        for(int i = 0; i < legends.length; i++)
+        {
+            new PieChart.Data(legends[i], (double)SumByType[i]);
+        }
         PieChart pieChart = new PieChart(pieChartData);
         pieChart.setClockwise(false);
-
-        //tab 1 layout
-        Label Countrylbl = new Label("Country: ");
-        Label Yearlbl = new Label("Year: ");
-        ChoiceBox cbCountry = new ChoiceBox();
-        ChoiceBox cbYear = new ChoiceBox();
-        cbCountry.getItems().add("all countries");
-        cbCountry.getItems().addAll(countries);
-        cbYear.getItems().add("all time");
-        cbYear.getItems().addAll(years);
-        cbYear.getSelectionModel().selectFirst();
-        HBox CountryHBox = new HBox(5);
-        HBox YearHBox = new HBox(5);
-        HBox outerHBox = new HBox(25);
         
-        CountryHBox.getChildren().addAll(Countrylbl, cbCountry);
-        YearHBox.getChildren().addAll(Yearlbl, cbYear);
-        outerHBox.getChildren().addAll(CountryHBox, YearHBox);
-
-        
-        BorderPane TableBP = new BorderPane();
-        TableBP.setCenter(tableView);
-        TableBP.setTop(outerHBox);
-
+        new PieChart.Data("Sun", 20)
         //tab 1
-         tab1.setText("Database");
-         tab1.setContent(TableBP);
-         tabPane.getTabs().add(tab1);
+        tab1.setText("Database");
+        tab1.setContent(tableView);
+        tabPane.getTabs().add(tab1);
         
         //tab 2
         tab2.setText("Line Chart");
@@ -202,16 +200,17 @@ public class Main extends Application
         tabPane.getTabs().add(tab2);
             
         //tab 3
-        // tab3.setText("Pie Chart");
-        // tab3.setContent(pieChart);
-        // tabPane.getTabs().add(tab3);
+        tab3.setText("Pie Chart");
+        tab3.setContent(pieChart);
+        tabPane.getTabs().add(tab3);
 
         return tabPane;
     }
 
 
     @Override
-    public void start(Stage primaryStage){
+    public void start(Stage primaryStage)
+    {
         var group = new Group();
         group.setManaged(false);
         var pane = new StackPane(createContent(), group);

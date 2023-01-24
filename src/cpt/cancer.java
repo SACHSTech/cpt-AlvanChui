@@ -26,6 +26,9 @@ public class cancer {
     public List<Integer> getCancerData() {
         return cancerData;
     }
+    public int getCancerData_Index(int Index) {
+        return cancerData.get(Index);
+    }
     public int getTotalDeath(){
         int sum = 0;
         for(int i = 0; i < cancerData.size(); i++){
