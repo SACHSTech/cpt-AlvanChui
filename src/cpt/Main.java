@@ -31,12 +31,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
  
+
+import javafx.scene.control.ComboBox;
+import javafx.scene.layout.TilePane;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 
 
 public class Main extends Application
@@ -46,7 +52,7 @@ public class Main extends Application
     public static List<String> codes = new ArrayList<>();
     public static List<Integer> years = new ArrayList<>();
     public static List<cancer> cancerList = new ArrayList<>();
-    public static List<piechart_data> countriesList = new ArrayList<>();
+    //public static List<piechart.data> countriesList = new ArrayList<>();
     public static String[] legends;
     public static String cancerTypes = "Death [";
     public static void main(String[] args) throws Exception
@@ -88,7 +94,7 @@ public class Main extends Application
                 String[] values = nextline.split(",");
                 for (int i = 3; i < values.length; i++)
                 {
-                    worldwideData
+                    //worldwideData
                 }
             }
         }
@@ -183,12 +189,15 @@ public class Main extends Application
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
         for(int i = 0; i < legends.length; i++)
         {
-            new PieChart.Data(legends[i], (double)SumByType[i]);
+            pieChartData.add(new PieChart.Data(legends[i], (double)SumByType[i]));
+            
         }
+
         PieChart pieChart = new PieChart(pieChartData);
         pieChart.setClockwise(false);
+
         
-        new PieChart.Data("Sun", 20)
+        new PieChart.Data("Sun", 20);
         //tab 1
         tab1.setText("Database");
         tab1.setContent(tableView);
@@ -199,9 +208,27 @@ public class Main extends Application
         tab2.setContent(LineChart);
         tabPane.getTabs().add(tab2);
             
+
+        ObservableList<String> options = 
+        FXCollections.observableArrayList(
+            countries
+        );
+        
+        Label label = new Label("Select country:");
+        //HBox with spacing = 5
+        final BorderPane borderPane = new BorderPane();
+        final HBox hbox = new HBox(10);
+        hbox.setTranslateX(8);
+        hbox.setTranslateY(5);
+        final ComboBox comboBox = new ComboBox(options);
+        hbox.getChildren().addAll(label, comboBox);
+        hbox.setAlignment(Pos.CENTER_LEFT);
+        borderPane.setTop(hbox);
+        borderPane.setCenter(pieChart);
+        
         //tab 3
         tab3.setText("Pie Chart");
-        tab3.setContent(pieChart);
+        tab3.setContent(borderPane);
         tabPane.getTabs().add(tab3);
 
         return tabPane;
