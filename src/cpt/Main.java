@@ -48,13 +48,19 @@ public class Main extends Application
     public static List<cancer> cancerList = new ArrayList<>();
     public static List<piechart_data> countriesList = new ArrayList<>();
     public static String[] legends;
+    public static String cancerTypes = "Death [";
     public static void main(String[] args) throws Exception
     {
-        try (BufferedReader br = new BufferedReader(new FileReader("src/csv/trimmed-cancer-deaths-by-type-grouped.csv"))) 
+        try (BufferedReader br = new BufferedReader(new FileReader("src/csv/modified-cancer-deaths-by-type-grouped.csv"))) 
         {
             String line;
             line = br.readLine();
             legends = line.split(",");
+            for(int i = 3; i < legends.length; i++)
+            {
+                cancerTypes += legends[i] + ",";
+            }
+            cancerTypes+= "]";
             while ((line = br.readLine()) != null) 
             {
                 List<Integer> data = new ArrayList<>();
@@ -72,11 +78,9 @@ public class Main extends Application
                 }
                 records.add(data);
             }
-            int[] dataArr = new int[records.size()];
             for(int count = 0; count < records.size(); count++) 
             {
-                dataArr = records.get(count).stream().mapToInt((i) -> i.intValue()).toArray();
-                cancer newdata = new cancer(countries.get(count), codes.get(count), (int)years.get(count), dataArr);
+                cancer newdata = new cancer(countries.get(count), codes.get(count), (int)years.get(count), records.get(count));
                 cancerList.add(newdata);
             }
             Set<String> setCountries = new HashSet<>(countries);
@@ -97,7 +101,6 @@ public class Main extends Application
     private Tab tab1;
     private Tab tab2;
     private Tab tab3;
-    //public static List<CheckBox> countryCBList = new ArrayList<CheckBox>();
     
     
     public Parent createContent() 
@@ -115,16 +118,16 @@ public class Main extends Application
         //table
         ObservableList<cancer> data = FXCollections.observableList(cancerList);
         TableColumn ColCountry = new TableColumn();
-        ColCountry.setText("Country");
+        ColCountry.setText(legends[0]);
         ColCountry.setCellValueFactory(new PropertyValueFactory("country"));
         TableColumn ColCode = new TableColumn();
-        ColCode.setText("code");
+        ColCode.setText(legends[1]);
         ColCode.setCellValueFactory(new PropertyValueFactory("code"));
         TableColumn ColYear = new TableColumn();
-        ColYear.setText("year");
+        ColYear.setText(legends[2]);
         ColYear.setCellValueFactory(new PropertyValueFactory("year"));
         TableColumn ColCancerData = new TableColumn();
-        ColCancerData.setText("Cancer Data");
+        ColCancerData.setText(cancerTypes);
         ColCancerData.setCellValueFactory(new PropertyValueFactory("cancerData"));
         final TableView tableView = new TableView();
         tableView.setItems(data);
