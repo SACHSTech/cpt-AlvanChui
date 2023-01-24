@@ -9,7 +9,7 @@ public class cancer {
     public cancer(String countrysString, String codeString, int intYear, int[] intArrCancerData){
         country = countrysString;
         code = codeString;
-        year= intYear;
+        year = intYear;
         cancerData = intArrCancerData;
     }
     public String getCountry() {
