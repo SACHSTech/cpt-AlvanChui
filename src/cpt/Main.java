@@ -43,7 +43,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.TilePane;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 public class Main extends Application
 {
@@ -121,7 +122,7 @@ public class Main extends Application
     private Tab tab1;
     private Tab tab2;
     private Tab tab3;
-    
+    PieChart pieChart;
     
     public Parent createContent() 
     {
@@ -193,7 +194,7 @@ public class Main extends Application
             
         }
 
-        PieChart pieChart = new PieChart(pieChartData);
+        pieChart = new PieChart(pieChartData);
         pieChart.setClockwise(false);
 
         
@@ -231,7 +232,39 @@ public class Main extends Application
         tab3.setContent(borderPane);
         tabPane.getTabs().add(tab3);
 
+
+
+        comboBox.valueProperty().addListener(new ChangeListener<String>() {
+            @Override public void changed(ObservableValue ov, String oldValue, String newValue) {
+                refreshPieChart(newValue);
+
+            }    
+        });
+
         return tabPane;
+    }
+
+    public void refreshPieChart(String newCountry)
+    {
+        int[] SumByType1 = new int[cancerList.size()-3];
+        for(int i = 0; i < cancerList.size();i++){
+            for(int dataIndex = 3; dataIndex <cancerList.get(i).getCancerData().size(); dataIndex++)
+            {
+//                System.out.println(cancerList.get(i).getCountry());
+                if(cancerList.get(i).getCountry() == newCountry)
+                {
+                SumByType1[dataIndex-3] += cancerList.get(i).getCancerData_Index(dataIndex);
+                }
+            }
+        }
+        ObservableList<PieChart.Data> pieChartData1 = FXCollections.observableArrayList();
+        for(int i = 0; i < legends.length; i++)
+        {
+            pieChartData1.add(new PieChart.Data(legends[i], (double)SumByType1[i]));
+            
+        }
+
+        pieChart.setData(pieChartData1);
     }
 
 
