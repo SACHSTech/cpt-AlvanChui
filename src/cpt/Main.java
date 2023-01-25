@@ -22,6 +22,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -43,7 +44,6 @@ public class Main extends Application
     public static List<String> codes = new ArrayList<>();
     public static List<Integer> years = new ArrayList<>();
     public static List<cancer> cancerList = new ArrayList<>();
-    public static List<countryData> countryDataList = new ArrayList<>();
     public static String[] legends;
 
     public static void main(String[] args) throws Exception
@@ -89,11 +89,6 @@ public class Main extends Application
         years.clear();
         years.addAll(setYear);
         //call countryData constructor
-        for(int i = 0; i < countries.size(); i++)
-        {
-            countryData newCountryData = new countryData(true, countries.get(i));
-            countryDataList.add(newCountryData);
-        }
         //launch data visualization
         launch(args);
         
@@ -200,11 +195,17 @@ public class Main extends Application
         pieChart = new PieChart(pieChartData);
         pieChart.setClockwise(false);
         
-        
+        //tab 1 layout
+        Label title = new Label("Dataset of Death Caused by Cancer from 1990 to 2016");
+        title.setFont(Font.font("Arial Black",30));
+        title.setTranslateX(10);
+        BorderPane borderPane_table = new BorderPane();
+        borderPane_table.setCenter(tableView);
+        borderPane_table.setTop(title);
 
         //tab 1: table
         tab1.setText("Database");
-        tab1.setContent(tableView);
+        tab1.setContent(borderPane_table);
         tabPane.getTabs().add(tab1);
         
         //tab 2 layout

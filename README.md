@@ -14,7 +14,7 @@
     1. Line Chart - shows the trendline of the total number of death over time, grouped by countries.
     2. Pie Chart - let users select a country and a year, shows the proportion of death caused by various types of cancer.
 
-* The data are extracted from a research on cancer by [Our Worlds In Data](https://ourworldindata.org/how-many-people-in-the-world-die-from-cancer)
+* The data are extracted from a research on cancer by Out world in data.
 
 ---
 
@@ -31,3 +31,9 @@ Thus, we are able to...
 * compare the number of people dying in different countries.
 
 * acknowledge trend of deceased from cancer over the past few decades.
+
+## Links
+
+[Data Source](https://ourworldindata.org/how-many-people-in-the-world-die-from-cancer)
+
+[Demo video](https://drive.google.com/file/d/1exhSJc0GbhBTsPuu1P4DLoFOtZI8jdEk/view?usp=sharing)
