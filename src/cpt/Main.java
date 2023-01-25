@@ -144,7 +144,7 @@ public class Main extends Application
         
 
         // Line Chart
-        LineChart.setTitle("total death from cancer over the past decades");
+        LineChart.setTitle("Total Death by Cancer Over The Past Decades");
         List<Series<Number,Number>> seriesList = new ArrayList<>();
 
 
@@ -193,6 +193,7 @@ public class Main extends Application
         }
         //generate piechart
         pieChart = new PieChart(pieChartData);
+        pieChart.setTitle("Death Caused by Different Types of Cancers");
         pieChart.setClockwise(false);
         
         //tab 1 layout

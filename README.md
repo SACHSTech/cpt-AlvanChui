@@ -32,8 +32,12 @@ Thus, we are able to...
 
 * acknowledge trend of deceased from cancer over the past few decades.
 
+---
+
 ## Links
 
 [Data Source](https://ourworldindata.org/how-many-people-in-the-world-die-from-cancer)
 
 [Demo video](https://drive.google.com/file/d/1exhSJc0GbhBTsPuu1P4DLoFOtZI8jdEk/view?usp=sharing)
+
+[Code Walkthrough video](https://drive.google.com/file/d/1T_UfD_1sh_cfnbMj-3Bl5ET6RU4-Q0cD/view?usp=sharing)
