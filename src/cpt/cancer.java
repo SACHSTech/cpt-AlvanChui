@@ -18,7 +18,7 @@ public class cancer {
         return country;
     }
     public String getCode() {
-        return code;
+        return code;    
     }
     public int getYear() {
         return year;

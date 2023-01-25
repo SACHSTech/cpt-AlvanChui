@@ -171,25 +171,27 @@ public class Main extends Application
         // Line Chart
         LineChart.setTitle("total death from cancer over the past decades");
         List<Series<Number,Number>> seriesList = new ArrayList<>();
-        for(int i = 0; i < countries.size();i++)
-        {
-            //create a list of series that stores the series of each country
-            Series newSeries = new XYChart.Series();
-            newSeries.setName(countries.get(i));
-            seriesList.add(newSeries);
-        }
-        //read data from the constructor objects
-        int resultIndex;
-        for(int i = 0; i < cancerList.size();i++)
-        {
-            resultIndex = codes.indexOf(cancerList.get(i).getCode());
-            seriesList.get(resultIndex).getData().add(new XYChart.Data(cancerList.get(i).getYear(), cancerList.get(i).getTotalDeath()));
-        }
-        //get all of the series
-        for(int n = 0; n < countries.size();n++)
-        {
-            LineChart.getData().addAll(seriesList.get(n));
-        }
+
+
+        // for(int i = 0; i < countries.size();i++)
+        // {
+        //     //create a list of series that stores the series of each country
+        //     Series newSeries = new XYChart.Series();
+        //     newSeries.setName(countries.get(i));
+        //     seriesList.add(newSeries);
+        // }
+        // //read data from the constructor objects
+        // int resultIndex;
+        // for(int i = 0; i < cancerList.size();i++)
+        // {
+        //     resultIndex = codes.indexOf(cancerList.get(i).getCode());
+        //     seriesList.get(resultIndex).getData().add(new XYChart.Data(cancerList.get(i).getYear(), cancerList.get(i).getTotalDeath()));
+        // }
+        // //get all of the series
+        // for(int n = 0; n < countries.size();n++)
+        // {
+        //     LineChart.getData().addAll(seriesList.get(n));
+        // }
         
         chkbList = new ArrayList<>();
         for (int i = 0; i < countries.size();i++){
@@ -197,7 +199,7 @@ public class Main extends Application
             chk.setSelected(true);
             chkbList.add(i, chk);
         }
-        
+        refreshLineChart();
 
         //Pie Chart
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
@@ -266,13 +268,13 @@ public class Main extends Application
         for (int i = 0; i < chkbList.size(); i++)
         {
             int value = i;
-            System.out.println(chkbList.get(i));
             chkbList.get(i).selectedProperty().addListener(new ChangeListener<Boolean>()
             {
                 @Override
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
                 {
-                    refreshLineChart(newValue, value);
+                    refreshLineChart();
+                    System.out.println(newValue);
                 }
             });
         }
@@ -289,44 +291,45 @@ public class Main extends Application
     }
     /**
      * updates the line chart when called
-     * @param Checked boolean value that checks whether the checkbox is checked
-     * @param index the index of the checkbox
+  
      */
-    public void refreshLineChart(Boolean Checked, int index)
+    public void refreshLineChart()
     {
         LineChart.getData().clear();
         List<Series<Number,Number>> seriesList = new ArrayList<>();
-        for(int i = 0; i < countries.size();i++)
-        {
-                Series newSeries = new XYChart.Series();
-                newSeries.setName(countries.get(i));
-                seriesList.add(newSeries);        
-        }
+        List<Series<Number,Number>> copyseriesList = new ArrayList<>();
+
+
+        for (int i = 0; i < countries.size();i++){
+            Series newSeries = new XYChart.Series();
+            seriesList.add(newSeries);  
+        }        
         int resultIndex;
-        for(int i = 0; i < index-1;i++)
+        for(int i = 0; i < cancerList.size();i++)
         {
             resultIndex = codes.indexOf(cancerList.get(i).getCode());
             seriesList.get(resultIndex).getData().add(new XYChart.Data(cancerList.get(i).getYear(), cancerList.get(i).getTotalDeath()));
         }
-        if(Checked == true){
-            resultIndex = codes.indexOf(cancerList.get(index).getCode());
-            seriesList.get(resultIndex).getData().add(new XYChart.Data(cancerList.get(index).getYear(), cancerList.get(index).getTotalDeath()));
-        }
-        for(int i = index+1; i < cancerList.size();i++)
-        {
-            resultIndex = codes.indexOf(cancerList.get(i).getCode());
-            seriesList.get(resultIndex).getData().add(new XYChart.Data(cancerList.get(i).getYear(), cancerList.get(i).getTotalDeath()));
+
+        Boolean[] checkBoxSelected = new Boolean[countries.size()];        
+        int k = 0;
+        for (int i = 0; i < countries.size();i++){
+            checkBoxSelected[i] = chkbList.get(i).isSelected();
+            System.out.println(countries.get(i) + " : " + checkBoxSelected[i]);
+
+
+            if (checkBoxSelected[i])
+            {
+                copyseriesList.add(seriesList.get(i));
+                copyseriesList.get(k).setName(countries.get(i));
+                k++;
+            }
         }
         for(int n = 0; n < countries.size();n++)
         {
-            LineChart.getData().addAll(seriesList.get(n));
+            LineChart.getData().addAll(copyseriesList.get(n));
         }
-        chkbList = new ArrayList<>();
-        for (int i = 0; i < countries.size();i++){
-            CheckBox chk = new CheckBox(countries.get(i));
-            chk.setSelected(true);
-            chkbList.add(i, chk);
-        }
+
     }
     /**
      * updates the pie chart when called
