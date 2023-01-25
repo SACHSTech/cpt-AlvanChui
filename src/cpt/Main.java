@@ -157,7 +157,6 @@ public class Main extends Application
         for(int i = 0; i < legendsReference.length;i++)
         {
             TableColumn col = new TableColumn();
-            System.out.println(legends[i] + " " + legendsReference[i]);
             col.setText(legends[i]);
             col.setCellValueFactory(new PropertyValueFactory(legendsReference[i]));
             columns.add(i, col);
@@ -274,7 +273,6 @@ public class Main extends Application
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
                 {
                     refreshLineChart();
-                    System.out.println(newValue);
                 }
             });
         }
@@ -305,9 +303,11 @@ public class Main extends Application
             seriesList.add(newSeries);  
         }        
         int resultIndex;
+
         for(int i = 0; i < cancerList.size();i++)
         {
-            resultIndex = codes.indexOf(cancerList.get(i).getCode());
+//            resultIndex = codes.indexOf(cancerList.get(i).getCode());
+            resultIndex = countries.indexOf(cancerList.get(i).getCountry());
             seriesList.get(resultIndex).getData().add(new XYChart.Data(cancerList.get(i).getYear(), cancerList.get(i).getTotalDeath()));
         }
 
@@ -315,7 +315,7 @@ public class Main extends Application
         int k = 0;
         for (int i = 0; i < countries.size();i++){
             checkBoxSelected[i] = chkbList.get(i).isSelected();
-            System.out.println(countries.get(i) + " : " + checkBoxSelected[i]);
+//            System.out.println(countries.get(i) + " : " + checkBoxSelected[i]);
 
 
             if (checkBoxSelected[i])
@@ -325,7 +325,7 @@ public class Main extends Application
                 k++;
             }
         }
-        for(int n = 0; n < countries.size();n++)
+        for(int n = 0; n < k;n++)
         {
             LineChart.getData().addAll(copyseriesList.get(n));
         }
@@ -341,7 +341,6 @@ public class Main extends Application
         for(int i = 0; i < cancerList.size();i++){
             for(int dataIndex = 3; dataIndex <cancerList.get(i).getCancerData().size(); dataIndex++)
             {
-//                System.out.println(cancerList.get(i).getCountry());
                 if(newCountry == "Worldwide" || cancerList.get(i).getCountry() == newCountry)
                 {
                     SumByType1[dataIndex-3] += cancerList.get(i).getCancerData_Index(dataIndex-3);
